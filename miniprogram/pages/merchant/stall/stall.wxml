@@ -1,0 +1,36 @@
+<view class="page">
+  <view class="card form">
+    <view class="field row between">
+      <view>今日出摊</view>
+      <switch checked="{{isOpen}}" bindchange="toggleOpen" color="#f59e0b" />
+    </view>
+    <view class="field">
+      <view class="label">开始时间</view>
+      <picker mode="time" value="{{startTime}}" bindchange="onStartChange">
+        <view class="picker">{{startTime}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="label">结束时间</view>
+      <picker mode="time" value="{{endTime}}" bindchange="onEndChange">
+        <view class="picker">{{endTime}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="label">出摊位置</view>
+      <input value="{{locationText}}" bindinput="onLocationInput" placeholder="例如：东门地铁口 A 口旁" />
+    </view>
+    <view class="field">
+      <view class="label">今日公告</view>
+      <textarea value="{{announcement}}" bindinput="onAnnouncementInput" placeholder="例如：今晚 18:00 出摊，限量供应" />
+    </view>
+    <view class="field">
+      <view class="label">位置照片</view>
+      <image wx:if="{{locationPhotoUrl || locationPhotoFileID}}" class="location-photo" src="{{locationPhotoUrl || locationPhotoFileID}}" mode="aspectFill" bindtap="previewLocationPhoto" />
+      <view wx:else class="photo-placeholder">拍一张摊位或周边照片，顾客会更容易找到你。</view>
+      <button class="ghost-btn photo-btn" loading="{{isUploadingPhoto}}" bindtap="chooseStallPhoto">拍照或选择照片</button>
+    </view>
+    <button class="ghost-btn" bindtap="useCurrentLocation">使用当前位置</button>
+    <button class="primary-btn save" bindtap="save">保存</button>
+  </view>
+</view>

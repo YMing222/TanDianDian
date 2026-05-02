@@ -1,0 +1,34 @@
+.order {
+  margin-bottom: 16rpx;
+}
+
+.name {
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.items {
+  margin: 18rpx 0;
+}
+
+.remark {
+  margin-bottom: 12rpx;
+}
+
+.total {
+  margin-bottom: 18rpx;
+  color: #92400e;
+  font-weight: 800;
+}
+
+.empty {
+  padding: 56rpx 20rpx;
+  color: #7c7062;
+  text-align: center;
+}
+
+.ops {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10rpx;
+}

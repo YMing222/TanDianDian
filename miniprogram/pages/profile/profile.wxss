@@ -1,0 +1,58 @@
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+}
+
+.avatar {
+  width: 96rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #ffffff;
+  text-align: center;
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
+.name {
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.menu {
+  margin-top: 20rpx;
+}
+
+.openid-card {
+  margin-top: 20rpx;
+}
+
+.openid-title {
+  margin-bottom: 10rpx;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.openid-value {
+  margin-top: 18rpx;
+  padding: 18rpx;
+  border-radius: 8rpx;
+  background: #fffaf0;
+  color: #3f3529;
+  font-size: 24rpx;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.openid-actions {
+  display: grid;
+  grid-template-columns: 1fr 160rpx;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.copy-btn {
+  margin: 0;
+}

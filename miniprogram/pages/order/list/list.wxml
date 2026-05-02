@@ -1,0 +1,15 @@
+<view class="page">
+  <view class="section-title">我的预约</view>
+  <block wx:for="{{orders}}" wx:key="_id">
+    <view class="card order">
+      <view class="row between">
+        <view class="vendor">{{item.vendorName}}</view>
+        <view class="tag">{{item.statusText}}</view>
+      </view>
+      <view class="muted">自取时间：{{item.pickupTime}}</view>
+      <view class="items">{{item.itemText}}</view>
+      <view class="amount">￥{{item.totalText}}</view>
+    </view>
+  </block>
+  <view wx:if="{{!orders.length && !isLoading}}" class="empty">暂无预约订单</view>
+</view>

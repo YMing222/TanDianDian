@@ -1,0 +1,24 @@
+<view class="page">
+  <view class="card profile">
+    <view class="avatar">我</view>
+    <view>
+      <view class="name">我的</view>
+      <view class="muted">查看预约订单，也可以进入商家工作台。</view>
+    </view>
+  </view>
+
+  <view class="card menu" bindtap="openMerchant">
+    <view>商家工作台</view>
+    <view class="muted">发布今日出摊、管理商品和处理预约订单</view>
+  </view>
+
+  <view class="card openid-card">
+    <view class="openid-title">测试 OpenID</view>
+    <view class="muted">复制后填入 vendors.ownerOpenids，即可开通当前微信的商家权限。</view>
+    <view wx:if="{{openid}}" class="openid-value">{{openid}}</view>
+    <view class="openid-actions">
+      <button class="ghost-btn" loading="{{loadingOpenid}}" bindtap="getOpenid">获取 OpenID</button>
+      <button class="primary-btn copy-btn" bindtap="copyOpenid">复制</button>
+    </view>
+  </view>
+</view>

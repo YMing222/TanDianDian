@@ -1,0 +1,21 @@
+<view class="page">
+  <view class="card">
+    <view class="field">
+      <view class="label">摊位名称</view>
+      <input value="{{name}}" bindinput="onNameInput" placeholder="例如：圆圆烤冷面" />
+    </view>
+    <view class="field">
+      <view class="label">经营品类</view>
+      <input value="{{category}}" bindinput="onCategoryInput" placeholder="例如：烤冷面 / 炸串" />
+    </view>
+    <view class="field">
+      <view class="label">联系电话</view>
+      <input type="number" value="{{phone}}" bindinput="onPhoneInput" placeholder="顾客可联系的手机号" />
+    </view>
+    <view class="field">
+      <view class="label">摊位介绍</view>
+      <textarea value="{{description}}" bindinput="onDescriptionInput" placeholder="简单介绍招牌商品、口味和出摊特色" />
+    </view>
+    <button class="primary-btn" loading="{{isSaving}}" bindtap="save">保存资料</button>
+  </view>
+</view>

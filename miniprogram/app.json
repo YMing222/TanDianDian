@@ -1,0 +1,46 @@
+{
+  "pages": [
+    "pages/customer/home/home",
+    "pages/order/list/list",
+    "pages/profile/profile",
+    "pages/vendor/detail/detail",
+    "pages/order/create/create",
+    "pages/merchant/dashboard/dashboard",
+    "pages/merchant/stall/stall",
+    "pages/merchant/products/products",
+    "pages/merchant/orders/orders",
+    "pages/merchant/profile/profile"
+  ],
+  "window": {
+    "navigationBarTitleText": "摊点点",
+    "navigationBarBackgroundColor": "#F7C948",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFFDF5"
+  },
+  "tabBar": {
+    "color": "#6B6256",
+    "selectedColor": "#D97706",
+    "backgroundColor": "#FFFDF5",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/customer/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/order/list/list",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于展示附近出摊商家和导航到摊位"
+    }
+  },
+  "sitemapLocation": "sitemap.json"
+}

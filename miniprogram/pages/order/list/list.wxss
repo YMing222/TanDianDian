@@ -1,0 +1,29 @@
+.section-title {
+  margin-bottom: 16rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.order {
+  margin-bottom: 16rpx;
+}
+
+.vendor {
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.items {
+  margin: 18rpx 0 8rpx;
+}
+
+.amount {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.empty {
+  margin-top: 180rpx;
+  text-align: center;
+  color: #7c7062;
+}

@@ -1,0 +1,70 @@
+<view class="page">
+  <button class="primary-btn" bindtap="openAddForm">新增商品</button>
+
+  <view wx:if="{{showForm}}" class="card form-card">
+    <view class="form-title">{{isEditing ? '编辑商品' : '新增商品'}}</view>
+
+    <view class="field">
+      <view class="label">商品名称</view>
+      <input value="{{form.name}}" data-field="name" bindinput="onFormInput" placeholder="例如：烤冷面" />
+    </view>
+
+    <view class="field">
+      <view class="label">商品描述</view>
+      <textarea value="{{form.description}}" data-field="description" bindinput="onFormInput" placeholder="口味、份量或推荐说明" />
+    </view>
+
+    <view class="field two-column">
+      <view>
+        <view class="label">价格</view>
+        <input type="digit" value="{{form.price}}" data-field="price" bindinput="onFormInput" placeholder="0.00" />
+      </view>
+      <view>
+        <view class="label">排序</view>
+        <input type="number" value="{{form.sort}}" data-field="sort" bindinput="onFormInput" placeholder="1" />
+      </view>
+    </view>
+
+    <view class="switch-row">
+      <view>
+        <view class="label">是否上架</view>
+        <view class="muted">关闭后顾客端不展示</view>
+      </view>
+      <switch checked="{{form.isOnSale}}" data-field="isOnSale" bindchange="onFormSwitch" color="#f59e0b" />
+    </view>
+
+    <view class="switch-row">
+      <view>
+        <view class="label">是否售罄</view>
+        <view class="muted">售罄商品保留展示状态</view>
+      </view>
+      <switch checked="{{form.isSoldOut}}" data-field="isSoldOut" bindchange="onFormSwitch" color="#f59e0b" />
+    </view>
+
+    <view class="form-actions">
+      <button class="ghost-btn" bindtap="closeForm">取消</button>
+      <button class="primary-btn save-btn" loading="{{isSaving}}" bindtap="saveProduct">保存</button>
+    </view>
+  </view>
+
+  <view wx:if="{{!products.length && !isLoading}}" class="empty">暂无商品，先新增一个招牌小吃吧。</view>
+
+  <block wx:for="{{products}}" wx:key="_id">
+    <view class="card product">
+      <view class="product-info">
+        <view class="row between">
+          <view class="name">{{item.name}}</view>
+          <view class="tag">{{item.statusText}}</view>
+        </view>
+        <view wx:if="{{item.description}}" class="muted desc">{{item.description}}</view>
+        <view class="meta">￥{{item.priceText}} · 排序 {{item.sort || 1}}</view>
+      </view>
+      <view class="ops">
+        <button size="mini" data-id="{{item._id}}" bindtap="editProduct">编辑</button>
+        <button size="mini" data-id="{{item._id}}" bindtap="toggleSale">{{item.saleActionText}}</button>
+        <button size="mini" data-id="{{item._id}}" bindtap="toggleSoldOut">{{item.soldOutActionText}}</button>
+        <button size="mini" data-id="{{item._id}}" bindtap="deleteProduct">删除</button>
+      </view>
+    </view>
+  </block>
+</view>

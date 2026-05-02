@@ -1,0 +1,60 @@
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 32rpx 28rpx;
+  border-radius: 8rpx;
+  background: #f7c948;
+}
+
+.eyebrow {
+  font-size: 24rpx;
+  color: #5b3904;
+}
+
+.title {
+  margin-top: 8rpx;
+  font-size: 44rpx;
+  font-weight: 800;
+}
+
+.subtitle {
+  margin-top: 8rpx;
+  color: #5b3904;
+  font-size: 26rpx;
+}
+
+.locate {
+  width: 128rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 8rpx;
+  background: #27231f;
+  color: #ffffff;
+  font-size: 26rpx;
+}
+
+.section-title {
+  margin: 32rpx 0 16rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.vendor-card {
+  margin-bottom: 18rpx;
+}
+
+.vendor-name {
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.desc {
+  margin-top: 14rpx;
+}
+
+.location {
+  margin: 18rpx 0 10rpx;
+  font-size: 28rpx;
+}

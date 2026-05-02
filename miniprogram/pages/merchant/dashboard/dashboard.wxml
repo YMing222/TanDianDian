@@ -1,0 +1,22 @@
+<view class="page">
+  <view class="card header">
+    <view>
+      <view class="title">{{vendorName}}</view>
+      <view class="muted">今日状态：{{isOpen ? '正在出摊' : '暂停出摊'}}</view>
+    </view>
+    <switch checked="{{isOpen}}" bindchange="toggleOpen" color="#f59e0b" />
+  </view>
+
+  <view class="grid">
+    <view class="card action" bindtap="goStall">出摊设置</view>
+    <view class="card action" bindtap="goProducts">商品管理</view>
+    <view class="card action" bindtap="goOrders">预约订单</view>
+    <view class="card action" bindtap="goProfile">商家资料</view>
+  </view>
+
+  <view class="section-title">今日位置</view>
+  <view class="card">
+    <view class="muted">顾客看到的出摊地点</view>
+    <view class="location">{{locationText}}</view>
+  </view>
+</view>
