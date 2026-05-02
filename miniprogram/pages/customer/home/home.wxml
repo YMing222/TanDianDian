@@ -2,7 +2,7 @@
   <view class="hero">
     <view>
       <view class="eyebrow">今日出摊</view>
-      <view class="title">找得到，也约得到</view>
+      <view class="title">找得到，也订得到</view>
       <view class="subtitle">附近小吃摊位、菜单和预约自取</view>
     </view>
     <button class="locate" bindtap="getLocation">定位</button>
