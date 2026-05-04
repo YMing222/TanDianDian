@@ -41,6 +41,39 @@
       <switch checked="{{form.isSoldOut}}" data-field="isSoldOut" bindchange="onFormSwitch" color="#f59e0b" />
     </view>
 
+    <view class="flavor-section">
+      <view class="section-title">口味设置</view>
+      <view class="switch-row compact">
+        <view>
+          <view class="label">继承商家默认口味</view>
+          <view class="muted">默认口味：{{vendorDefaultFlavorText}}</view>
+        </view>
+        <switch checked="{{form.useVendorDefaultFlavor}}" bindchange="toggleUseVendorDefaultFlavor" color="#f59e0b" />
+      </view>
+
+      <view wx:if="{{!form.useVendorDefaultFlavor}}">
+        <view class="flavor-presets">
+          <button wx:for="{{presetFlavors}}" wx:key="*this" size="mini" data-flavor="{{item}}" bindtap="togglePresetFlavor">{{item}}</button>
+        </view>
+        <view class="custom-row">
+          <input value="{{form.customFlavor}}" bindinput="onCustomFlavorInput" placeholder="添加自定义口味" />
+          <button class="ghost-btn add-btn" bindtap="addCustomFlavor">添加</button>
+        </view>
+        <view wx:if="{{form.flavorOptions.length}}" class="selected-flavors">
+          <view wx:for="{{form.flavorOptions}}" wx:key="*this" class="flavor-tag" data-flavor="{{item}}" bindtap="removeFlavor">{{item}} ×</view>
+        </view>
+        <view wx:else class="muted empty-flavor">暂未设置商品口味</view>
+
+        <view class="switch-row compact">
+          <view>
+            <view class="label">允许多选</view>
+            <view class="muted">关闭后顾客只能选一个口味</view>
+          </view>
+          <switch checked="{{form.flavorMultiSelect}}" bindchange="toggleProductFlavorMulti" color="#f59e0b" />
+        </view>
+      </view>
+    </view>
+
     <view class="form-actions">
       <button class="ghost-btn" bindtap="closeForm">取消</button>
       <button class="primary-btn save-btn" loading="{{isSaving}}" bindtap="saveProduct">保存</button>
@@ -58,6 +91,7 @@
         </view>
         <view wx:if="{{item.description}}" class="muted desc">{{item.description}}</view>
         <view class="meta">￥{{item.priceText}} · 排序 {{item.sort || 1}}</view>
+        <view class="muted flavor-line">{{item.flavorModeText}}：{{item.flavorSummary}}</view>
       </view>
       <view class="ops">
         <button size="mini" data-id="{{item._id}}" bindtap="editProduct">编辑</button>

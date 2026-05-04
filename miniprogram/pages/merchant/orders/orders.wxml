@@ -1,4 +1,5 @@
 <view class="page">
+  <view wx:if="{{realtimeMode}}" class="muted realtime">{{realtimeMode}}</view>
   <view wx:if="{{!orders.length && !isLoading}}" class="empty">暂无预约订单</view>
 
   <block wx:for="{{orders}}" wx:key="_id">

@@ -5,6 +5,7 @@
     "pages/profile/profile",
     "pages/vendor/detail/detail",
     "pages/order/create/create",
+    "pages/order/detail/detail",
     "pages/merchant/dashboard/dashboard",
     "pages/merchant/stall/stall",
     "pages/merchant/products/products",

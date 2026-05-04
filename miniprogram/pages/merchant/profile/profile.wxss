@@ -20,3 +20,63 @@ textarea {
 textarea {
   min-height: 150rpx;
 }
+
+.flavor-card {
+  margin-top: 20rpx;
+}
+
+.section-title {
+  margin-bottom: 10rpx;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.flavor-presets,
+.selected-flavors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.flavor-presets button {
+  margin: 0;
+}
+
+.custom-row {
+  display: grid;
+  grid-template-columns: 1fr 144rpx;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.add-btn {
+  height: 76rpx;
+  line-height: 76rpx;
+}
+
+.flavor-tag {
+  padding: 10rpx 18rpx;
+  border-radius: 8rpx;
+  background: #fff3bf;
+  color: #92400e;
+  font-size: 24rpx;
+}
+
+.empty-flavor {
+  margin-top: 18rpx;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 22rpx;
+  padding-top: 22rpx;
+  border-top: 1rpx solid #f0e3cf;
+}
+
+.primary-btn {
+  margin-top: 22rpx;
+}

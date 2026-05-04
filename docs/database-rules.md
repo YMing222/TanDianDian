@@ -28,16 +28,16 @@ MVP 阶段建议把“写操作”尽量收口到云函数，让云函数使用 
 
 ## orders
 
-顾客订单读取建议走 `orderGetMine` 云函数，商家订单读取和状态更新也建议走云函数。数据库端先禁止直接读写，避免订单串读。
+顾客订单读取建议走 `orderGetMine` / `orderGetDetail` 云函数。MVP 阶段商家预约订单页为了实时更新，会直接 `watch` 当前 `vendorId` 的订单；上线前需要结合业务风险检查数据库读权限。
 
 ```json
 {
-  "read": false,
+  "read": "auth.openid != null",
   "write": false
 }
 ```
 
-如果开发调试阶段确实需要前端临时直读订单，可使用更宽松的规则，但上线前应改回云函数读写。
+如果不接受前端直接监听订单，可把商家订单页改成轮询云函数，并将 `orders.read` 改回 `false`。
 
 ## announcements
 

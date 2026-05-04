@@ -5,6 +5,59 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
 
+function normalizeSelectedFlavors(flavors) {
+  const seen = {};
+  return (Array.isArray(flavors) ? flavors : [])
+    .map((item) => String(item || '').trim())
+    .filter((item) => {
+      if (!item || seen[item]) return false;
+      seen[item] = true;
+      return true;
+    });
+}
+
+function getEffectiveFlavorConfig(product, vendor) {
+  const useVendorDefaultFlavor = product.useVendorDefaultFlavor !== false;
+  if (useVendorDefaultFlavor) {
+    return {
+      options: Array.isArray(vendor.defaultFlavorOptions) ? vendor.defaultFlavorOptions : [],
+      multiSelect: !!vendor.defaultFlavorMultiSelect
+    };
+  }
+
+  return {
+    options: Array.isArray(product.flavorOptions) ? product.flavorOptions : [],
+    multiSelect: !!product.flavorMultiSelect
+  };
+}
+
+function assertValidFlavors(item, product, vendor) {
+  const config = getEffectiveFlavorConfig(product, vendor);
+  const selectedFlavors = normalizeSelectedFlavors(item.selectedFlavors);
+
+  if (!config.options.length) {
+    return { selectedFlavors: [], flavorText: '' };
+  }
+
+  if (!selectedFlavors.length) {
+    throw new Error('flavor is required');
+  }
+
+  if (!config.multiSelect && selectedFlavors.length > 1) {
+    throw new Error('only one flavor is allowed');
+  }
+
+  const invalid = selectedFlavors.some((flavor) => !config.options.includes(flavor));
+  if (invalid) {
+    throw new Error('invalid flavor selected');
+  }
+
+  return {
+    selectedFlavors,
+    flavorText: selectedFlavors.join('、')
+  };
+}
+
 exports.main = async (event) => {
   const wxContext = cloud.getWXContext();
   const now = new Date();
@@ -42,11 +95,14 @@ exports.main = async (event) => {
       throw new Error('invalid order item');
     }
 
+    const flavor = assertValidFlavors(item, product, vendor);
     return {
       _id: product._id,
       name: product.name,
       price: Number(product.price || 0),
-      quantity
+      quantity,
+      selectedFlavors: flavor.selectedFlavors,
+      flavorText: flavor.flavorText
     };
   });
 

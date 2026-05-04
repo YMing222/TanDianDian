@@ -4,6 +4,17 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
 
+function normalizeFlavorOptions(options) {
+  const seen = {};
+  return (Array.isArray(options) ? options : [])
+    .map((item) => String(item || '').trim())
+    .filter((item) => {
+      if (!item || seen[item]) return false;
+      seen[item] = true;
+      return true;
+    });
+}
+
 async function getOwnedVendor(vendorId, openid) {
   const res = await db.collection('vendors').doc(vendorId).get();
   const vendor = res.data;
@@ -36,6 +47,7 @@ function normalizeProduct(event, vendorId) {
   const name = String(event.name || '').trim();
   const price = Number(event.price);
   const sort = Number.parseInt(event.sort, 10) || 1;
+  const useVendorDefaultFlavor = event.useVendorDefaultFlavor !== false;
 
   if (!name) {
     throw new Error('product name is required');
@@ -52,7 +64,10 @@ function normalizeProduct(event, vendorId) {
     price,
     sort,
     isOnSale: !!event.isOnSale,
-    isSoldOut: !!event.isSoldOut
+    isSoldOut: !!event.isSoldOut,
+    useVendorDefaultFlavor,
+    flavorOptions: useVendorDefaultFlavor ? [] : normalizeFlavorOptions(event.flavorOptions),
+    flavorMultiSelect: !!event.flavorMultiSelect
   };
 }
 

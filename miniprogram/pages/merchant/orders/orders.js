@@ -4,14 +4,27 @@ Page({
   data: {
     vendorId: '',
     orders: [],
-    isLoading: false
+    isLoading: false,
+    realtimeMode: ''
   },
+
+  watcher: null,
+  pollTimer: null,
 
   onShow() {
     this.init();
   },
 
+  onHide() {
+    this.stopRealtime();
+  },
+
+  onUnload() {
+    this.stopRealtime();
+  },
+
   async init() {
+    this.stopRealtime();
     try {
       const res = await wx.cloud.callFunction({ name: 'vendorGetMine' });
       const result = res.result || {};
@@ -24,6 +37,7 @@ Page({
       getApp().globalData.vendor = result.vendor;
       this.setData({ vendorId: result.vendor._id });
       await this.loadOrders();
+      this.startRealtime();
     } catch (error) {
       console.warn('init merchant orders failed', error);
       wx.showToast({ title: '商家信息加载失败', icon: 'none' });
@@ -41,9 +55,7 @@ Page({
         .limit(50)
         .get();
 
-      this.setData({
-        orders: res.data.map((order) => this.formatOrder(order))
-      });
+      this.setOrders(res.data);
     } catch (error) {
       console.warn('load merchant orders failed', error);
       wx.showToast({ title: '订单加载失败', icon: 'none' });
@@ -52,10 +64,73 @@ Page({
     }
   },
 
+  startRealtime() {
+    if (!db || !this.data.vendorId) {
+      this.startPolling();
+      return;
+    }
+
+    try {
+      this.watcher = db.collection('orders')
+        .where({ vendorId: this.data.vendorId })
+        .orderBy('createdAt', 'desc')
+        .watch({
+          onChange: (snapshot) => {
+            this.setData({ realtimeMode: '实时更新中' });
+            this.setOrders(snapshot.docs || []);
+          },
+          onError: (error) => {
+            console.warn('watch merchant orders failed', error);
+            this.closeWatcher();
+            this.startPolling();
+          }
+        });
+    } catch (error) {
+      console.warn('start merchant order watch failed', error);
+      this.startPolling();
+    }
+  },
+
+  startPolling() {
+    this.stopPolling();
+    this.setData({ realtimeMode: '轮询更新中' });
+    this.pollTimer = setInterval(() => {
+      this.loadOrders();
+    }, 8000);
+  },
+
+  stopRealtime() {
+    this.closeWatcher();
+    this.stopPolling();
+  },
+
+  closeWatcher() {
+    if (this.watcher && this.watcher.close) {
+      this.watcher.close();
+    }
+    this.watcher = null;
+  },
+
+  stopPolling() {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+    }
+    this.pollTimer = null;
+  },
+
+  setOrders(orders) {
+    this.setData({
+      orders: (orders || []).map((order) => this.formatOrder(order))
+    });
+  },
+
   formatOrder(order) {
     return {
       ...order,
-      itemText: (order.items || []).map((item) => `${item.name} x${item.quantity}`).join('，'),
+      itemText: (order.items || []).map((item) => {
+        const flavor = item.flavorText ? `（${item.flavorText}）` : '';
+        return `${item.name} x${item.quantity}${flavor}`;
+      }).join('，'),
       totalText: Number(order.totalAmount || 0).toFixed(2),
       canAccept: order.status === 'pending',
       canReject: order.status === 'pending',

@@ -1,3 +1,5 @@
+const presetFlavors = ['不辣', '微辣', '中辣', '重辣', '少盐', '少糖', '不要香菜', '不要葱'];
+
 Page({
   data: {
     vendorId: '',
@@ -5,6 +7,10 @@ Page({
     category: '',
     phone: '',
     description: '',
+    defaultFlavorOptions: [],
+    defaultFlavorMultiSelect: false,
+    customFlavor: '',
+    presetFlavors,
     isSaving: false
   },
 
@@ -29,7 +35,9 @@ Page({
         name: vendor.name || '',
         category: vendor.category || '',
         phone: vendor.phone || '',
-        description: vendor.description || ''
+        description: vendor.description || '',
+        defaultFlavorOptions: vendor.defaultFlavorOptions || [],
+        defaultFlavorMultiSelect: !!vendor.defaultFlavorMultiSelect
       });
     } catch (error) {
       console.warn('load vendor profile failed', error);
@@ -53,6 +61,51 @@ Page({
     this.setData({ description: event.detail.value });
   },
 
+  onCustomFlavorInput(event) {
+    this.setData({ customFlavor: event.detail.value });
+  },
+
+  toggleDefaultFlavorMulti(event) {
+    this.setData({ defaultFlavorMultiSelect: event.detail.value });
+  },
+
+  togglePresetFlavor(event) {
+    const flavor = event.currentTarget.dataset.flavor;
+    this.toggleFlavor(flavor);
+  },
+
+  addCustomFlavor() {
+    const flavor = this.data.customFlavor.trim();
+    if (!flavor) {
+      wx.showToast({ title: '请填写口味名称', icon: 'none' });
+      return;
+    }
+    this.toggleFlavor(flavor, true);
+    this.setData({ customFlavor: '' });
+  },
+
+  removeFlavor(event) {
+    const flavor = event.currentTarget.dataset.flavor;
+    this.setData({
+      defaultFlavorOptions: this.data.defaultFlavorOptions.filter((item) => item !== flavor)
+    });
+  },
+
+  toggleFlavor(flavor, forceAdd = false) {
+    const current = this.data.defaultFlavorOptions;
+    if (!forceAdd && current.includes(flavor)) {
+      this.setData({ defaultFlavorOptions: current.filter((item) => item !== flavor) });
+      return;
+    }
+
+    if (current.includes(flavor)) return;
+    this.setData({ defaultFlavorOptions: [...current, flavor] });
+  },
+
+  isPresetSelected(flavor) {
+    return this.data.defaultFlavorOptions.includes(flavor);
+  },
+
   async save() {
     if (!this.data.vendorId || this.data.isSaving) return;
     if (!this.data.name.trim()) {
@@ -69,7 +122,9 @@ Page({
           name: this.data.name,
           category: this.data.category,
           phone: this.data.phone,
-          description: this.data.description
+          description: this.data.description,
+          defaultFlavorOptions: this.data.defaultFlavorOptions,
+          defaultFlavorMultiSelect: this.data.defaultFlavorMultiSelect
         }
       });
       wx.showToast({ title: '已保存', icon: 'success' });

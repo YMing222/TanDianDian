@@ -36,6 +36,7 @@ docs/              数据库和部署说明
 - `productManage`：商家商品管理
 - `orderCreate`：顾客创建预约订单
 - `orderGetMine`：顾客查看自己的订单
+- `orderGetDetail`：顾客查看自己的订单详情
 - `orderUpdateStatus`：商家更新订单状态
 
 ## 开发提示

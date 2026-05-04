@@ -21,14 +21,26 @@
   <view wx:if="{{!items.length}}" class="empty">当前没有可预约商品</view>
   <block wx:for="{{items}}" wx:key="_id">
     <view class="card item">
-      <view>
-        <view class="item-name">{{item.name}}</view>
-        <view class="muted">￥{{item.priceText}}</view>
-      </view>
-      <view class="qty">
-        <button data-id="{{item._id}}" bindtap="minus">-</button>
-        <text>{{item.quantity}}</text>
-        <button data-id="{{item._id}}" bindtap="plus">+</button>
+      <view class="item-main">
+        <view class="row between">
+          <view>
+            <view class="item-name">{{item.name}}</view>
+            <view class="muted">￥{{item.priceText}}</view>
+          </view>
+          <view class="qty">
+            <button data-id="{{item._id}}" bindtap="minus">-</button>
+            <text>{{item.quantity}}</text>
+            <button data-id="{{item._id}}" bindtap="plus">+</button>
+          </view>
+        </view>
+
+        <view wx:if="{{item.quantity > 0 && item.flavorOptions.length}}" class="flavors">
+          <view class="flavor-title">选择口味{{item.flavorMultiSelect ? '（可多选）' : '（单选）'}}</view>
+          <view class="flavor-options">
+            <button wx:for="{{item.flavorOptions}}" wx:for-item="flavor" wx:key="*this" size="mini" data-id="{{item._id}}" data-flavor="{{flavor}}" bindtap="toggleFlavor">{{flavor}}</button>
+          </view>
+          <view class="muted selected-text">已选：{{item.selectedFlavorText || '未选择'}}</view>
+        </view>
       </view>
     </view>
   </block>

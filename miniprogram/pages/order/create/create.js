@@ -3,6 +3,7 @@ const db = wx.cloud ? wx.cloud.database() : null;
 Page({
   data: {
     vendorId: '',
+    vendor: null,
     pickupTime: '',
     contactPhone: '',
     remark: '',
@@ -20,24 +21,36 @@ Page({
     if (!db || !this.data.vendorId) return;
 
     try {
-      const res = await db.collection('products')
-        .where({
-          vendorId: this.data.vendorId,
-          isOnSale: true,
-          isSoldOut: false
-        })
-        .orderBy('sort', 'asc')
-        .get();
+      const [vendorRes, productRes] = await Promise.all([
+        db.collection('vendors').doc(this.data.vendorId).get(),
+        db.collection('products')
+          .where({
+            vendorId: this.data.vendorId,
+            isOnSale: true,
+            isSoldOut: false
+          })
+          .orderBy('sort', 'asc')
+          .get()
+      ]);
 
-      const items = res.data.map((item, index) => ({
-        _id: item._id,
-        name: item.name,
-        price: Number(item.price || 0),
-        priceText: Number(item.price || 0).toFixed(2),
-        quantity: index === 0 ? 1 : 0
-      }));
+      const vendor = vendorRes.data || {};
+      const items = productRes.data.map((item, index) => {
+        const flavorConfig = this.getEffectiveFlavorConfig(item, vendor);
+        return {
+          _id: item._id,
+          name: item.name,
+          price: Number(item.price || 0),
+          priceText: Number(item.price || 0).toFixed(2),
+          quantity: index === 0 ? 1 : 0,
+          flavorOptions: flavorConfig.options,
+          flavorMultiSelect: flavorConfig.multiSelect,
+          selectedFlavors: [],
+          selectedFlavorText: ''
+        };
+      });
 
       this.setData({
+        vendor,
         items,
         totalAmount: this.sum(items)
       });
@@ -45,6 +58,20 @@ Page({
       console.warn('load order products failed', error);
       wx.showToast({ title: '商品加载失败', icon: 'none' });
     }
+  },
+
+  getEffectiveFlavorConfig(product, vendor) {
+    if (product.useVendorDefaultFlavor !== false) {
+      return {
+        options: vendor.defaultFlavorOptions || [],
+        multiSelect: !!vendor.defaultFlavorMultiSelect
+      };
+    }
+
+    return {
+      options: product.flavorOptions || [],
+      multiSelect: !!product.flavorMultiSelect
+    };
   },
 
   onPickupTimeChange(event) {
@@ -70,13 +97,56 @@ Page({
   updateQuantity(id, delta) {
     const items = this.data.items.map((item) => {
       if (item._id !== id) return item;
-      return { ...item, quantity: Math.max(0, item.quantity + delta) };
+      const quantity = Math.max(0, item.quantity + delta);
+      const nextItem = {
+        ...item,
+        quantity,
+        selectedFlavors: quantity > 0 ? item.selectedFlavors : []
+      };
+      nextItem.selectedFlavorText = nextItem.selectedFlavors.join('、');
+      return nextItem;
     });
     this.setData({ items, totalAmount: this.sum(items) });
   },
 
+  toggleFlavor(event) {
+    const { id, flavor } = event.currentTarget.dataset;
+    const items = this.data.items.map((item) => {
+      if (item._id !== id) return item;
+
+      const selected = item.selectedFlavors || [];
+      if (item.flavorMultiSelect) {
+        const nextSelected = selected.includes(flavor)
+          ? selected.filter((value) => value !== flavor)
+          : [...selected, flavor];
+        return {
+          ...item,
+          selectedFlavors: nextSelected,
+          selectedFlavorText: nextSelected.join('、')
+        };
+      }
+
+      const nextSelected = selected.includes(flavor) ? [] : [flavor];
+      return {
+        ...item,
+        selectedFlavors: nextSelected,
+        selectedFlavorText: nextSelected.join('、')
+      };
+    });
+    this.setData({ items });
+  },
+
   sum(items) {
     return items.reduce((total, item) => total + item.price * item.quantity, 0);
+  },
+
+  validateSelectedItems(selectedItems) {
+    const missing = selectedItems.find((item) => item.flavorOptions.length && !item.selectedFlavors.length);
+    if (missing) {
+      wx.showToast({ title: `请选择${missing.name}的口味`, icon: 'none' });
+      return false;
+    }
+    return true;
   },
 
   async submitOrder() {
@@ -88,6 +158,8 @@ Page({
       return;
     }
 
+    if (!this.validateSelectedItems(selectedItems)) return;
+
     this.setData({ isSubmitting: true });
     try {
       await wx.cloud.callFunction({
@@ -96,7 +168,8 @@ Page({
           vendorId: this.data.vendorId,
           items: selectedItems.map((item) => ({
             _id: item._id,
-            quantity: item.quantity
+            quantity: item.quantity,
+            selectedFlavors: item.selectedFlavors
           })),
           pickupTime: this.data.pickupTime,
           contactPhone: this.data.contactPhone,

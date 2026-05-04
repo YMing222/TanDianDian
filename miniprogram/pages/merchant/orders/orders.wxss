@@ -2,6 +2,11 @@
   margin-bottom: 16rpx;
 }
 
+.realtime {
+  margin-bottom: 16rpx;
+  text-align: right;
+}
+
 .name {
   font-size: 30rpx;
   font-weight: 800;

@@ -16,6 +16,34 @@
       <view class="label">摊位介绍</view>
       <textarea value="{{description}}" bindinput="onDescriptionInput" placeholder="简单介绍招牌商品、口味和出摊特色" />
     </view>
-    <button class="primary-btn" loading="{{isSaving}}" bindtap="save">保存资料</button>
   </view>
+
+  <view class="card flavor-card">
+    <view class="section-title">默认口味</view>
+    <view class="muted">商品默认继承这里的口味，也可以在商品里单独覆盖。</view>
+
+    <view class="flavor-presets">
+      <button wx:for="{{presetFlavors}}" wx:key="*this" size="mini" data-flavor="{{item}}" bindtap="togglePresetFlavor">{{item}}</button>
+    </view>
+
+    <view class="custom-row">
+      <input value="{{customFlavor}}" bindinput="onCustomFlavorInput" placeholder="添加自定义口味" />
+      <button class="ghost-btn add-btn" bindtap="addCustomFlavor">添加</button>
+    </view>
+
+    <view wx:if="{{defaultFlavorOptions.length}}" class="selected-flavors">
+      <view wx:for="{{defaultFlavorOptions}}" wx:key="*this" class="flavor-tag" data-flavor="{{item}}" bindtap="removeFlavor">{{item}} ×</view>
+    </view>
+    <view wx:else class="muted empty-flavor">暂未设置默认口味</view>
+
+    <view class="switch-row">
+      <view>
+        <view class="label">允许多选</view>
+        <view class="muted">关闭后顾客只能选一个口味</view>
+      </view>
+      <switch checked="{{defaultFlavorMultiSelect}}" bindchange="toggleDefaultFlavorMulti" color="#f59e0b" />
+    </view>
+  </view>
+
+  <button class="primary-btn" loading="{{isSaving}}" bindtap="save">保存资料</button>
 </view>

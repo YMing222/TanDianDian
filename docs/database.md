@@ -30,6 +30,8 @@ announcements
   "longitude": 116.39747,
   "locationPhotoFileID": "",
   "announcement": "今晚 18:00 出摊，限量供应。",
+  "defaultFlavorOptions": ["不辣", "微辣", "中辣"],
+  "defaultFlavorMultiSelect": false,
   "ownerOpenids": ["测试微信的 openid"],
   "createdAt": "Date",
   "updatedAt": "Date"
@@ -48,6 +50,9 @@ announcements
   "price": 18,
   "isOnSale": true,
   "isSoldOut": false,
+  "useVendorDefaultFlavor": true,
+  "flavorOptions": [],
+  "flavorMultiSelect": false,
   "sort": 1,
   "createdAt": "Date",
   "updatedAt": "Date"
@@ -68,7 +73,9 @@ announcements
       "_id": "product-id",
       "name": "烤冷面",
       "price": 18,
-      "quantity": 1
+      "quantity": 1,
+      "selectedFlavors": ["微辣"],
+      "flavorText": "微辣"
     }
   ],
   "pickupTime": "18:30",

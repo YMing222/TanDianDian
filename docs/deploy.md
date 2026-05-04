@@ -34,6 +34,7 @@ vendorSaveStall
 productManage
 orderCreate
 orderGetMine
+orderGetDetail
 orderUpdateStatus
 ```
 
@@ -65,7 +66,8 @@ orderUpdateStatus
 7. 顾客进入详情页，查看照片、菜单、导航。
 8. 顾客提交预约订单。
 9. 顾客在“我的订单”查看状态。
-10. 摊主在“预约订单”接单、拒单、完成。
+10. 顾客进入订单详情查看口味、数量、价格和备注。
+11. 摊主在“预约订单”实时看到新订单，并接单、拒单、完成。
 
 ## 6. 上传体验版
 

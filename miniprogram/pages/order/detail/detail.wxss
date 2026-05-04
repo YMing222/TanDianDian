@@ -1,0 +1,38 @@
+.header-card {
+  margin-bottom: 24rpx;
+}
+
+.vendor {
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.section-title {
+  margin: 24rpx 0 16rpx;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.item-name {
+  margin-bottom: 10rpx;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.subtotal,
+.total {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.total-card {
+  margin-top: 20rpx;
+}

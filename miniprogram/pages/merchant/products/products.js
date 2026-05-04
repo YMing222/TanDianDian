@@ -1,3 +1,5 @@
+const presetFlavors = ['不辣', '微辣', '中辣', '重辣', '少盐', '少糖', '不要香菜', '不要葱'];
+
 const emptyForm = {
   _id: '',
   name: '',
@@ -5,12 +7,20 @@ const emptyForm = {
   price: '',
   sort: 1,
   isOnSale: true,
-  isSoldOut: false
+  isSoldOut: false,
+  useVendorDefaultFlavor: true,
+  flavorOptions: [],
+  flavorMultiSelect: false,
+  customFlavor: ''
 };
 
 Page({
   data: {
     vendorId: '',
+    vendorDefaultFlavorOptions: [],
+    vendorDefaultFlavorText: '',
+    vendorDefaultFlavorMultiSelect: false,
+    presetFlavors,
     products: [],
     showForm: false,
     isEditing: false,
@@ -33,8 +43,14 @@ Page({
         return;
       }
 
-      getApp().globalData.vendor = result.vendor;
-      this.setData({ vendorId: result.vendor._id });
+      const vendor = result.vendor;
+      getApp().globalData.vendor = vendor;
+      this.setData({
+        vendorId: vendor._id,
+        vendorDefaultFlavorOptions: vendor.defaultFlavorOptions || [],
+        vendorDefaultFlavorText: (vendor.defaultFlavorOptions || []).join('、') || '未设置',
+        vendorDefaultFlavorMultiSelect: !!vendor.defaultFlavorMultiSelect
+      });
       await this.loadProducts();
     } catch (error) {
       console.warn('init products failed', error);
@@ -69,12 +85,19 @@ Page({
   formatProduct(product) {
     const isSoldOut = !!product.isSoldOut;
     const isOnSale = !!product.isOnSale;
+    const useVendorDefaultFlavor = product.useVendorDefaultFlavor !== false;
+    const flavorOptions = useVendorDefaultFlavor ? this.data.vendorDefaultFlavorOptions : (product.flavorOptions || []);
     return {
       ...product,
+      useVendorDefaultFlavor,
+      flavorOptions: product.flavorOptions || [],
+      flavorMultiSelect: !!product.flavorMultiSelect,
       priceText: Number(product.price || 0).toFixed(2),
       statusText: isSoldOut ? '已售罄' : (isOnSale ? '上架中' : '已下架'),
       saleActionText: isOnSale ? '下架' : '上架',
-      soldOutActionText: isSoldOut ? '恢复供应' : '设为售罄'
+      soldOutActionText: isSoldOut ? '恢复供应' : '设为售罄',
+      flavorSummary: flavorOptions.length ? flavorOptions.join('、') : '未设置口味',
+      flavorModeText: useVendorDefaultFlavor ? '继承商家默认' : '商品自定义'
     };
   },
 
@@ -100,7 +123,11 @@ Page({
         price: String(product.price || ''),
         sort: product.sort || 1,
         isOnSale: !!product.isOnSale,
-        isSoldOut: !!product.isSoldOut
+        isSoldOut: !!product.isSoldOut,
+        useVendorDefaultFlavor: product.useVendorDefaultFlavor !== false,
+        flavorOptions: product.flavorOptions || [],
+        flavorMultiSelect: !!product.flavorMultiSelect,
+        customFlavor: ''
       }
     });
   },
@@ -125,6 +152,51 @@ Page({
     this.setData({
       [`form.${field}`]: event.detail.value
     });
+  },
+
+  toggleUseVendorDefaultFlavor(event) {
+    this.setData({ 'form.useVendorDefaultFlavor': event.detail.value });
+  },
+
+  toggleProductFlavorMulti(event) {
+    this.setData({ 'form.flavorMultiSelect': event.detail.value });
+  },
+
+  onCustomFlavorInput(event) {
+    this.setData({ 'form.customFlavor': event.detail.value });
+  },
+
+  togglePresetFlavor(event) {
+    const flavor = event.currentTarget.dataset.flavor;
+    this.toggleFlavor(flavor);
+  },
+
+  addCustomFlavor() {
+    const flavor = this.data.form.customFlavor.trim();
+    if (!flavor) {
+      wx.showToast({ title: '请填写口味名称', icon: 'none' });
+      return;
+    }
+    this.toggleFlavor(flavor, true);
+    this.setData({ 'form.customFlavor': '' });
+  },
+
+  removeFlavor(event) {
+    const flavor = event.currentTarget.dataset.flavor;
+    this.setData({
+      'form.flavorOptions': this.data.form.flavorOptions.filter((item) => item !== flavor)
+    });
+  },
+
+  toggleFlavor(flavor, forceAdd = false) {
+    const current = this.data.form.flavorOptions;
+    if (!forceAdd && current.includes(flavor)) {
+      this.setData({ 'form.flavorOptions': current.filter((item) => item !== flavor) });
+      return;
+    }
+
+    if (current.includes(flavor)) return;
+    this.setData({ 'form.flavorOptions': [...current, flavor] });
   },
 
   async saveProduct() {
@@ -158,7 +230,10 @@ Page({
           price,
           sort,
           isOnSale: !!form.isOnSale,
-          isSoldOut: !!form.isSoldOut
+          isSoldOut: !!form.isSoldOut,
+          useVendorDefaultFlavor: !!form.useVendorDefaultFlavor,
+          flavorOptions: form.flavorOptions,
+          flavorMultiSelect: !!form.flavorMultiSelect
         }
       });
 

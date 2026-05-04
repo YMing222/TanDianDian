@@ -16,7 +16,10 @@ Page({
         orders: (res.result.orders || []).map((order) => ({
           ...order,
           vendorName: order.vendorName || '小吃摊',
-          itemText: (order.items || []).map((item) => `${item.name} x${item.quantity}`).join('，'),
+          itemText: (order.items || []).map((item) => {
+            const flavor = item.flavorText ? `（${item.flavorText}）` : '';
+            return `${item.name} x${item.quantity}${flavor}`;
+          }).join('，'),
           totalText: Number(order.totalAmount || 0).toFixed(2)
         }))
       });
@@ -26,5 +29,11 @@ Page({
     } finally {
       this.setData({ isLoading: false });
     }
+  },
+
+  openDetail(event) {
+    wx.navigateTo({
+      url: `/pages/order/detail/detail?id=${event.currentTarget.dataset.id}`
+    });
   }
 });

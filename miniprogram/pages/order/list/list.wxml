@@ -1,7 +1,7 @@
 <view class="page">
   <view class="section-title">我的预约</view>
   <block wx:for="{{orders}}" wx:key="_id">
-    <view class="card order">
+    <view class="card order" data-id="{{item._id}}" bindtap="openDetail">
       <view class="row between">
         <view class="vendor">{{item.vendorName}}</view>
         <view class="tag">{{item.statusText}}</view>
