@@ -37,7 +37,11 @@ docs/              数据库和部署说明
 - `orderCreate`：顾客创建预约订单
 - `orderGetMine`：顾客查看自己的订单
 - `orderGetDetail`：顾客查看自己的订单详情
+- `orderPay`：顾客重新发起订单支付
+- `orderCancel`：顾客接单前取消订单并触发退款
 - `orderUpdateStatus`：商家更新订单状态
+- `payNotify`：微信支付结果通知
+- `refundNotify`：微信退款结果通知
 
 ## 开发提示
 

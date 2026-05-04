@@ -47,6 +47,6 @@
 
   <view class="summary row between">
     <view>合计：￥{{totalAmount}}</view>
-    <button class="primary-btn submit" loading="{{isSubmitting}}" bindtap="submitOrder">提交预约</button>
+    <button class="primary-btn submit" loading="{{isSubmitting}}" bindtap="submitOrder">提交并支付</button>
   </view>
 </view>

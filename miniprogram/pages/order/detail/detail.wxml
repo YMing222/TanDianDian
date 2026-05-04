@@ -4,6 +4,7 @@
       <view class="vendor">{{order.vendorName}}</view>
       <view class="tag">{{order.statusText}}</view>
     </view>
+    <view class="muted">支付状态：{{order.paymentStatusText}}</view>
     <view class="muted">自取时间：{{order.pickupTime}}</view>
     <view class="muted">联系电话：{{order.contactPhone}}</view>
     <view wx:if="{{order.remark}}" class="muted">备注：{{order.remark}}</view>
@@ -26,5 +27,10 @@
       <view>合计</view>
       <view class="total">￥{{order.totalText}}</view>
     </view>
+  </view>
+
+  <view wx:if="{{order && (order.canPay || order.canCancel)}}" class="detail-actions">
+    <button wx:if="{{order.canPay}}" class="primary-btn" loading="{{isPaying}}" bindtap="payAgain">重新支付</button>
+    <button wx:if="{{order.canCancel}}" class="ghost-btn" loading="{{isCanceling}}" bindtap="cancelOrder">取消订单</button>
   </view>
 </view>

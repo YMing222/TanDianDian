@@ -1,4 +1,6 @@
 const db = wx.cloud ? wx.cloud.database() : null;
+const _ = db ? db.command : null;
+const visiblePaymentStatuses = ['paid', 'refunding', 'refunded', 'refund_failed'];
 
 Page({
   data: {
@@ -50,7 +52,10 @@ Page({
     this.setData({ isLoading: true });
     try {
       const res = await db.collection('orders')
-        .where({ vendorId: this.data.vendorId })
+        .where({
+          vendorId: this.data.vendorId,
+          paymentStatus: _.in(visiblePaymentStatuses)
+        })
         .orderBy('createdAt', 'desc')
         .limit(50)
         .get();
@@ -72,7 +77,10 @@ Page({
 
     try {
       this.watcher = db.collection('orders')
-        .where({ vendorId: this.data.vendorId })
+        .where({
+          vendorId: this.data.vendorId,
+          paymentStatus: _.in(visiblePaymentStatuses)
+        })
         .orderBy('createdAt', 'desc')
         .watch({
           onChange: (snapshot) => {
@@ -132,6 +140,7 @@ Page({
         return `${item.name} x${item.quantity}${flavor}`;
       }).join('，'),
       totalText: Number(order.totalAmount || 0).toFixed(2),
+      refundText: order.paymentStatus === 'refunding' ? '退款中' : (order.paymentStatus === 'refunded' ? '已退款' : ''),
       canAccept: order.status === 'pending',
       canReject: order.status === 'pending',
       canComplete: order.status === 'accepted'

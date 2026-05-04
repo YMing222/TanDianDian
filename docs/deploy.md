@@ -15,6 +15,7 @@
 users
 vendors
 vendor_locations
+vendor_pay_configs
 products
 orders
 announcements
@@ -35,8 +36,41 @@ productManage
 orderCreate
 orderGetMine
 orderGetDetail
+orderPay
+orderCancel
 orderUpdateStatus
+payNotify
+refundNotify
 ```
+
+## 3.1 配置微信支付
+
+每个摊位使用独立微信支付普通商户号。管理员在 `vendor_pay_configs` 中为摊位新增一条配置：
+
+```json
+{
+  "vendorId": "摊位 ID",
+  "mchId": "商户号",
+  "appId": "小程序 AppID",
+  "certSerialNo": "商户 API 证书序列号",
+  "credentialKey": "唯一密钥标识，例如 YUANYUAN",
+  "payNotifyUrl": "payNotify HTTP 触发地址",
+  "refundNotifyUrl": "refundNotify HTTP 触发地址",
+  "enabled": true
+}
+```
+
+在相关支付云函数环境变量中配置：
+
+```text
+WXPAY_YUANYUAN_PRIVATE_KEY=商户 API 私钥
+WXPAY_YUANYUAN_API_V3_KEY=商户 API v3 密钥
+WXPAY_PLATFORM_PUBLIC_KEY=微信支付平台证书公钥，可选但建议配置
+```
+
+需要配置环境变量的云函数：`orderCreate`、`orderPay`、`orderCancel`、`orderUpdateStatus`、`payNotify`、`refundNotify`。
+
+支付和退款通知 URL 使用 HTTP 云函数地址，不要带查询字符串。
 
 ## 4. 开通测试商家
 
@@ -64,10 +98,10 @@ orderUpdateStatus
 5. 新增商品并确认上架。
 6. 顾客首页查看摊位。
 7. 顾客进入详情页，查看照片、菜单、导航。
-8. 顾客提交预约订单。
-9. 顾客在“我的订单”查看状态。
-10. 顾客进入订单详情查看口味、数量、价格和备注。
-11. 摊主在“预约订单”实时看到新订单，并接单、拒单、完成。
+8. 顾客提交预约订单并完成微信支付。
+9. 支付通知回调后，顾客在“我的订单”查看状态。
+10. 顾客进入订单详情查看口味、数量、价格、支付和退款状态。
+11. 摊主在“预约订单”实时看到已支付新订单，并接单、拒单退款、完成。
 
 ## 6. 上传体验版
 

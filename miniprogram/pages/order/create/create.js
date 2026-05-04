@@ -149,6 +149,16 @@ Page({
     return true;
   },
 
+  requestPayment(payParams) {
+    return new Promise((resolve, reject) => {
+      wx.requestPayment({
+        ...payParams,
+        success: resolve,
+        fail: reject
+      });
+    });
+  },
+
   async submitOrder() {
     if (this.data.isSubmitting) return;
 
@@ -161,8 +171,9 @@ Page({
     if (!this.validateSelectedItems(selectedItems)) return;
 
     this.setData({ isSubmitting: true });
+    let orderId = '';
     try {
-      await wx.cloud.callFunction({
+      const res = await wx.cloud.callFunction({
         name: 'orderCreate',
         data: {
           vendorId: this.data.vendorId,
@@ -177,11 +188,18 @@ Page({
         }
       });
 
-      wx.showToast({ title: '预约已提交', icon: 'success' });
+      orderId = res.result.orderId;
+      await this.requestPayment(res.result.payParams);
+      wx.showToast({ title: '支付成功', icon: 'success' });
       setTimeout(() => wx.switchTab({ url: '/pages/order/list/list' }), 600);
     } catch (error) {
-      console.warn('submit order failed', error);
-      wx.showToast({ title: '提交失败', icon: 'none' });
+      console.warn('submit order or pay failed', error);
+      if (orderId) {
+        wx.showToast({ title: '支付未完成', icon: 'none' });
+        setTimeout(() => wx.navigateTo({ url: `/pages/order/detail/detail?id=${orderId}` }), 600);
+      } else {
+        wx.showToast({ title: '提交失败', icon: 'none' });
+      }
     } finally {
       this.setData({ isSubmitting: false });
     }

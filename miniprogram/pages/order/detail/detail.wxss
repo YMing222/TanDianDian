@@ -36,3 +36,10 @@
 .total-card {
   margin-top: 20rpx;
 }
+
+.detail-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}

@@ -11,10 +11,11 @@
       <view class="muted">自取时间：{{item.pickupTime}}</view>
       <view class="items">{{item.itemText}}</view>
       <view wx:if="{{item.remark}}" class="muted remark">备注：{{item.remark}}</view>
+      <view wx:if="{{item.refundText}}" class="muted remark">{{item.refundText}}</view>
       <view class="total">合计：￥{{item.totalText}}</view>
       <view class="ops">
         <button size="mini" disabled="{{!item.canAccept}}" data-id="{{item._id}}" data-status="accepted" bindtap="updateStatus">接单</button>
-        <button size="mini" disabled="{{!item.canReject}}" data-id="{{item._id}}" data-status="rejected" bindtap="updateStatus">拒单</button>
+        <button size="mini" disabled="{{!item.canReject}}" data-id="{{item._id}}" data-status="rejected" bindtap="updateStatus">拒单并退款</button>
         <button size="mini" disabled="{{!item.canComplete}}" data-id="{{item._id}}" data-status="completed" bindtap="updateStatus">完成</button>
       </view>
     </view>

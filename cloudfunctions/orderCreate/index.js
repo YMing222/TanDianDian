@@ -1,4 +1,9 @@
 const cloud = require('wx-server-sdk');
+const {
+  buildMiniProgramPayParams,
+  createJsapiTransaction,
+  randomString
+} = require('./wxpay');
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
@@ -17,8 +22,7 @@ function normalizeSelectedFlavors(flavors) {
 }
 
 function getEffectiveFlavorConfig(product, vendor) {
-  const useVendorDefaultFlavor = product.useVendorDefaultFlavor !== false;
-  if (useVendorDefaultFlavor) {
+  if (product.useVendorDefaultFlavor !== false) {
     return {
       options: Array.isArray(vendor.defaultFlavorOptions) ? vendor.defaultFlavorOptions : [],
       multiSelect: !!vendor.defaultFlavorMultiSelect
@@ -58,6 +62,27 @@ function assertValidFlavors(item, product, vendor) {
   };
 }
 
+function yuanToFen(amount) {
+  return Math.round(Number(amount || 0) * 100);
+}
+
+function buildOutTradeNo() {
+  return `TD${Date.now()}${randomString(6)}`.slice(0, 32);
+}
+
+async function getPayConfig(vendorId) {
+  const res = await db.collection('vendor_pay_configs')
+    .where({ vendorId, enabled: true })
+    .limit(1)
+    .get();
+
+  if (!res.data.length) {
+    throw new Error('vendor pay config not found');
+  }
+
+  return res.data[0];
+}
+
 exports.main = async (event) => {
   const wxContext = cloud.getWXContext();
   const now = new Date();
@@ -67,7 +92,10 @@ exports.main = async (event) => {
     throw new Error('invalid order payload');
   }
 
-  const vendorRes = await db.collection('vendors').doc(vendorId).get();
+  const [vendorRes, payConfig] = await Promise.all([
+    db.collection('vendors').doc(vendorId).get(),
+    getPayConfig(vendorId)
+  ]);
   const vendor = vendorRes.data;
   if (!vendor || vendor.isActive === false || !vendor.isOpen) {
     throw new Error('vendor is unavailable');
@@ -107,6 +135,12 @@ exports.main = async (event) => {
   });
 
   const totalAmount = orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const totalFee = yuanToFen(totalAmount);
+  if (totalFee <= 0) {
+    throw new Error('invalid order amount');
+  }
+
+  const outTradeNo = buildOutTradeNo();
   const order = {
     vendorId,
     vendorName: vendor.name || '',
@@ -116,12 +150,46 @@ exports.main = async (event) => {
     contactPhone: String(contactPhone || '').trim(),
     remark: String(remark || '').trim(),
     totalAmount,
-    status: 'pending',
-    statusText: '待商家接单',
+    totalFee,
+    status: 'unpaid',
+    statusText: '待支付',
+    paymentStatus: 'paying',
+    outTradeNo,
+    mchId: payConfig.mchId,
     createdAt: now,
     updatedAt: now
   };
 
-  const result = await db.collection('orders').add({ data: order });
-  return { orderId: result._id };
+  const addRes = await db.collection('orders').add({ data: order });
+  const orderId = addRes._id;
+
+  try {
+    const payRes = await createJsapiTransaction(payConfig, {
+      outTradeNo,
+      totalFee,
+      description: `${vendor.name || '摊点点'}预约点单`
+    }, wxContext.OPENID);
+    const prepayId = payRes.prepay_id;
+    const payParams = buildMiniProgramPayParams(payConfig, prepayId);
+
+    await db.collection('orders').doc(orderId).update({
+      data: {
+        prepayId,
+        updatedAt: new Date()
+      }
+    });
+
+    return { orderId, payParams };
+  } catch (error) {
+    await db.collection('orders').doc(orderId).update({
+      data: {
+        paymentStatus: 'unpaid',
+        status: 'unpaid',
+        statusText: '待支付',
+        payError: error.message,
+        updatedAt: new Date()
+      }
+    });
+    throw error;
+  }
 };

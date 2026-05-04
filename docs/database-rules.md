@@ -50,6 +50,17 @@ MVP 阶段建议把“写操作”尽量收口到云函数，让云函数使用 
 }
 ```
 
+## vendor_pay_configs
+
+支付配置包含商户号和环境变量引用，不应暴露给小程序端。
+
+```json
+{
+  "read": false,
+  "write": false
+}
+```
+
 ## users 和 vendor_locations
 
 当前 MVP 暂未深度使用，建议默认关闭直接写入。
