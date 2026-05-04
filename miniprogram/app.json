@@ -39,7 +39,7 @@
   },
   "permission": {
     "scope.userLocation": {
-      "desc": "用于展示附近出摊商家和导航到摊位"
+      "desc": "用于查看附近出摊的小吃摊，并为摊主保存出摊位置。"
     }
   },
   "sitemapLocation": "sitemap.json"

@@ -2,8 +2,8 @@
   <view class="hero">
     <view>
       <view class="eyebrow">今日出摊</view>
-      <view class="title">找得到，也订得到</view>
-      <view class="subtitle">附近小吃摊位、菜单和预约自取</view>
+      <view class="title">附近的小吃摊</view>
+      <view class="subtitle">查看正在出摊的位置、菜单和预约自取信息。</view>
     </view>
     <button class="locate" bindtap="getLocation">定位</button>
   </view>
@@ -20,4 +20,5 @@
       <view class="muted">营业时间：{{item.businessHours}}</view>
     </view>
   </block>
+  <view wx:if="{{!vendors.length}}" class="empty">附近暂时没有出摊信息</view>
 </view>

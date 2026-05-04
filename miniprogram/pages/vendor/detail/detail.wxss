@@ -67,6 +67,18 @@
 .price {
   color: #dc2626;
   font-weight: 800;
+  text-align: right;
+}
+
+.sold-out {
+  margin-top: 8rpx;
+  text-align: right;
+}
+
+.empty {
+  padding: 48rpx 20rpx;
+  color: #7c7062;
+  text-align: center;
 }
 
 .order-btn {

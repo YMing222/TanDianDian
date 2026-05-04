@@ -58,3 +58,9 @@
   margin: 18rpx 0 10rpx;
   font-size: 28rpx;
 }
+
+.empty {
+  padding: 56rpx 20rpx;
+  color: #7c7062;
+  text-align: center;
+}
